@@ -62,15 +62,18 @@ export const signup = async (req, res) => {
     res.status(400).json({ success: false, message: error.message }); //Sends an error response with a 400 status and a readable error message
   }
 };
+
 export const verifyEmail = async (req, res) => {
-  const { code } = req.body;
+  const { code } = req.body; // The 6-digit verification code sent by user
 
   try {
+    // 1️⃣ Find user with matching code that hasn’t expired
     const user = await User.findOne({
       verificationToken: code,
       verificationTokenExpireAt: { $gt: Date.now() },
     });
 
+    // 2️⃣ Handle invalid or expired code
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -78,22 +81,26 @@ export const verifyEmail = async (req, res) => {
       });
     }
 
-    // ✅ Mark user as verified
+    // 3️⃣ Mark user as verified
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpireAt = undefined;
     await user.save();
 
-    // Optional: send welcome email if you have a function
+    // 4️⃣ Optional: Send welcome email
     // await sendWelcomeEmail(user.email, user.name);
 
+    // 5️⃣ Send success response
     res.status(200).json({
       success: true,
       message: "Email verified successfully",
     });
   } catch (error) {
     console.error("Error in verifyEmail:", error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error while verifying email",
+    });
   }
 };
 
