@@ -1,29 +1,38 @@
-// Looking to send emails in production? Check out our Email API/SMTP product!
-import Nodemailer from "nodemailer";
-const { MailtrapTransport } = require("mailtrap");
+import nodemailer from "nodemailer";
+import {
+  VERIFICATION_EMAIL_TEMPLATE,
+  PASSWORD_RESET_REQUEST_TEMPLATE,
+  PASSWORD_RESET_SUCCESS_TEMPLATE,
+} from "./emailTemplates.js";
 
-const TOKEN = MAILTRAP_TOKEN;
+// Create transporter for Mailtrap
+const transport = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: "60ca0aa38d7abf", // replace with your Mailtrap credentials
+    pass: "f814ace50fa337",
+  },
+});
 
-const transport = Nodemailer.createTransport(
-  MailtrapTransport({
-    token: TOKEN,
-    testInboxId: 4141102,
-  })
-);
+// Send password reset email
+export const sendPasswordResetEmail = async (email, resetURL) => {
+  try {
+    const html = PASSWORD_RESET_REQUEST_TEMPLATE.replace(
+      "{{resetLink}}",
+      resetURL
+    );
 
-const sender = {
-  address: "hello@example.com",
-  name: "Mailtrap Test",
+    const mailOptions = {
+      from: '"Your App" <no-reply@yourapp.com>',
+      to: email,
+      subject: "Reset Your Password",
+      html,
+    };
+
+    const info = await transport.sendMail(mailOptions);
+    console.log("✅ Password reset email sent:", info.messageId);
+  } catch (error) {
+    console.error("❌ Error sending password reset email:", error);
+  }
 };
-const recipients = ["porsokkhy0804@gmail.com"];
-
-transport
-  .sendMail({
-    from: sender,
-    to: recipients,
-    subject: "You are awesome!",
-    text: "Congrats for sending test email with Mailtrap!",
-    category: "Integration Test",
-    sandbox: true,
-  })
-  .then(console.log, console.error);

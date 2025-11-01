@@ -4,7 +4,6 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendPasswordResetEmail } from "../mailtrap/email.js";
-import { use } from "react";
 
 // ✅ Signup controller
 export const signup = async (req, res) => {
@@ -65,26 +64,39 @@ export const signup = async (req, res) => {
 };
 export const verifyEmail = async (req, res) => {
   const { code } = req.body;
+
   try {
     const user = await User.findOne({
       verificationToken: code,
       verificationTokenExpireAt: { $gt: Date.now() },
     });
+
     if (!user) {
       return res.status(400).json({
         success: false,
         message: "Invalid or expired verification code",
       });
-      user.isVerified = true;
-      user.verificationToken = undefined;
-      user.verificationTokenExpireAt = undefined;
-      await user.save();
-      await sendWelcomeEmail(use.email, user.name);
     }
+
+    // ✅ Mark user as verified
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpireAt = undefined;
+    await user.save();
+
+    // Optional: send welcome email if you have a function
+    // await sendWelcomeEmail(user.email, user.name);
+
+    res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Error in verifyEmail:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 // ✅ Login controller
 export const login = async (req, res) => {
   const { email, password } = req.body;
