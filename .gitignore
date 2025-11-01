@@ -1,0 +1,45 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+frontend/build/
+
+# Cache
+.cache/
+.tmp/
+
+# VS Code settings
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Local environment files
+*.local
+
+# Optional npm cache directory
+.npm
+
+# Debug files
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+coverage/
+
+# Misc
+*.tgz
