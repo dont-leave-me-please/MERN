@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendPasswordResetEmail } from "../mailtrap/email.js";
 
-// ✅ Signup controller
+//Signup controller
 export const signup = async (req, res) => {
   //function declaration, (req, res) → Express passes two objects:,
   const { email, password, name } = req.body; //Get user input //This destructures data from the request body.
@@ -63,6 +63,7 @@ export const signup = async (req, res) => {
   }
 };
 
+//verifyEmail
 export const verifyEmail = async (req, res) => {
   const { code } = req.body; // The 6-digit verification code sent by user
 
@@ -104,7 +105,7 @@ export const verifyEmail = async (req, res) => {
   }
 };
 
-// ✅ Login controller
+//Login controller
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -149,7 +150,7 @@ export const login = async (req, res) => {
   }
 };
 
-// ✅ Logout controller
+//Logout controller
 export const logout = async (req, res) => {
   try {
     // 🧩 1. Clear the authentication cookie (token)
@@ -173,7 +174,7 @@ export const logout = async (req, res) => {
     });
   }
 };
-
+//forgotPassword
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
